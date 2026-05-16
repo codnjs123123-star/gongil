@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>공일이test - 부서 일정 등록기</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
-  <!-- Google Identity Services (OAuth 로그인 라이브러리) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -40,419 +39,127 @@
       color: var(--text);
     }
 
-    .container {
-      width: 100%;
-      max-width: 580px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+    .container { width: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 18px; }
+    .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px 28px; }
 
-    .card {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 26px 28px;
-    }
+    .header { text-align: center; padding: 32px 28px 24px; }
+    .header-icon { font-size: 52px; display: block; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    .header h1 { font-size: 22px; font-weight: 700; color: var(--blue-dark); letter-spacing: -0.5px; }
+    .header p { font-size: 14px; color: var(--text-sub); margin-top: 6px; line-height: 1.6; }
 
-    /* 헤더 */
-    .header {
-      text-align: center;
-      padding: 32px 28px 24px;
-    }
+    .warning-banner { background: #fff3e0; border: 1.5px solid #ff9800; border-radius: var(--radius); padding: 16px 20px; font-size: 13px; line-height: 1.7; color: #e65100; display: none; }
+    .warning-banner code { background: rgba(255,152,0,0.15); padding: 1px 5px; border-radius: 4px; font-family: monospace; }
 
-    .header-icon {
-      font-size: 52px;
-      display: block;
-      margin-bottom: 12px;
-      animation: float 3s ease-in-out infinite;
-    }
+    .security-banner { background: #e8f5e9; border: 1.5px solid #66bb6a; border-radius: var(--radius); padding: 16px 20px; font-size: 13px; line-height: 1.8; color: #1b5e20; }
+    .security-banner strong { display: block; margin-bottom: 4px; font-size: 14px; }
+    .security-banner ol { padding-left: 18px; margin-top: 4px; }
+    .security-banner ol li { margin-bottom: 2px; }
+    .security-banner a { color: #1565c0; text-decoration: underline; }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-7px); }
-    }
-
-    .header h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--blue-dark);
-      letter-spacing: -0.5px;
-    }
-
-    .header p {
-      font-size: 14px;
-      color: var(--text-sub);
-      margin-top: 6px;
-      line-height: 1.6;
-    }
-
-    /* 경고 배너 */
-    .warning-banner {
-      background: #fff3e0;
-      border: 1.5px solid #ff9800;
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      font-size: 13px;
-      line-height: 1.7;
-      color: #e65100;
-      display: none;
-    }
-
-    .warning-banner code {
-      background: rgba(255,152,0,0.15);
-      padding: 1px 5px;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-
-    /* 로그인 영역 */
     .login-card { text-align: center; padding: 20px 28px; }
+    #login-before p { font-size: 14px; color: var(--text-sub); margin-bottom: 16px; line-height: 1.6; }
 
-    #login-before p {
-      font-size: 14px;
-      color: var(--text-sub);
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
-
-    #google-login-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--white);
-      border: 1.5px solid var(--gray-border);
-      border-radius: 40px;
-      padding: 11px 28px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      font-family: inherit;
-      box-shadow: var(--shadow);
-      transition: box-shadow 0.2s, border-color 0.2s;
-    }
-
-    #google-login-btn:hover {
-      box-shadow: var(--shadow-lg);
-      border-color: var(--blue);
-    }
-
+    #google-login-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--white); border: 1.5px solid var(--gray-border); border-radius: 40px; padding: 11px 28px; font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; font-family: inherit; box-shadow: var(--shadow); transition: box-shadow 0.2s, border-color 0.2s; }
+    #google-login-btn:hover { box-shadow: var(--shadow-lg); border-color: var(--blue); }
     #google-login-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-    .user-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--blue-light);
-      border-radius: 40px;
-      padding: 8px 20px;
-      font-size: 14px;
-      color: var(--blue-dark);
-      font-weight: 500;
-    }
-
-    .user-badge img {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      border: 2px solid var(--blue-mid);
-    }
-
-    .logout-btn {
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 12px;
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: inherit;
-      transition: background 0.2s;
-    }
-
+    .user-badge { display: inline-flex; align-items: center; gap: 10px; background: var(--blue-light); border-radius: 40px; padding: 8px 20px; font-size: 14px; color: var(--blue-dark); font-weight: 500; }
+    .user-badge img { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--blue-mid); }
+    .logout-btn { background: none; border: none; color: var(--text-sub); font-size: 12px; cursor: pointer; padding: 2px 6px; border-radius: 4px; font-family: inherit; transition: background 0.2s; }
     .logout-btn:hover { background: var(--gray-border); }
 
-    /* 유형 토글 */
-    .type-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-sub);
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .type-toggle {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .type-btn {
-      flex: 1;
-      padding: 11px 16px;
-      border-radius: 10px;
-      border: 1.5px solid var(--gray-border);
-      background: var(--white);
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-sub);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
+    .type-label { font-size: 13px; font-weight: 500; color: var(--text-sub); margin-bottom: 10px; display: block; }
+    .type-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+    .type-btn { flex: 1; padding: 11px 16px; border-radius: 10px; border: 1.5px solid var(--gray-border); background: var(--white); font-size: 14px; font-weight: 500; color: var(--text-sub); cursor: pointer; transition: all 0.2s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .type-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .type-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--blue-dark); font-weight: 700; }
 
-    .type-btn.active {
-      background: var(--blue-light);
-      border-color: var(--blue);
-      color: var(--blue-dark);
-      font-weight: 700;
-    }
+    .input-label { font-size: 13px; font-weight: 500; color: var(--text-sub); margin-bottom: 8px; display: block; }
+    textarea { width: 100%; border: 1.5px solid var(--gray-border); border-radius: 10px; padding: 14px 16px; font-size: 15px; font-family: inherit; color: var(--text); line-height: 1.7; resize: none; min-height: 110px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 6px; }
+    textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(63,81,181,0.10); }
+    .input-hint { font-size: 12px; color: var(--text-sub); margin-bottom: 18px; }
 
-    /* 입력 영역 */
-    .input-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-sub);
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    textarea {
-      width: 100%;
-      border: 1.5px solid var(--gray-border);
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-size: 15px;
-      font-family: inherit;
-      color: var(--text);
-      line-height: 1.7;
-      resize: none;
-      min-height: 110px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      margin-bottom: 6px;
-    }
-
-    textarea:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(63,81,181,0.10);
-    }
-
-    .input-hint {
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-bottom: 18px;
-    }
-
-    /* 등록 버튼 */
-    .submit-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--blue);
-      color: var(--white);
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-      box-shadow: 0 2px 8px rgba(63,81,181,0.25);
-    }
-
-    .submit-btn:hover:not(:disabled) {
-      background: var(--blue-dark);
-      box-shadow: 0 4px 16px rgba(63,81,181,0.30);
-    }
-
+    .submit-btn { width: 100%; padding: 14px; background: var(--blue); color: var(--white); border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.2s, transform 0.1s, box-shadow 0.2s; box-shadow: 0 2px 8px rgba(63,81,181,0.25); }
+    .submit-btn:hover:not(:disabled) { background: var(--blue-dark); box-shadow: 0 4px 16px rgba(63,81,181,0.30); }
     .submit-btn:active:not(:disabled) { transform: scale(0.99); }
+    .submit-btn:disabled { background: var(--gray-border); color: var(--text-sub); cursor: not-allowed; box-shadow: none; }
 
-    .submit-btn:disabled {
-      background: var(--gray-border);
-      color: var(--text-sub);
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    /* 로딩 */
-    .loading {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 20px 0;
-      color: var(--text-sub);
-      font-size: 14px;
-    }
-
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid var(--blue-light);
-      border-top-color: var(--blue);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
+    .loading { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 20px 0; color: var(--text-sub); font-size: 14px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--blue-light); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* 결과 영역 */
-    .result-area {
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .result-item {
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 14px;
-      line-height: 1.7;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .result-item.success {
-      background: #e8f5e9;
-      border: 1.5px solid #a5d6a7;
-      color: #1b5e20;
-    }
-
-    .result-item.error {
-      background: #ffebee;
-      border: 1.5px solid #ef9a9a;
-      color: #b71c1c;
-    }
-
+    .result-area { display: none; flex-direction: column; gap: 10px; margin-top: 18px; }
+    .result-item { border-radius: 10px; padding: 14px 18px; font-size: 14px; line-height: 1.7; display: flex; align-items: flex-start; gap: 10px; }
+    .result-item.success { background: #e8f5e9; border: 1.5px solid #a5d6a7; color: #1b5e20; }
+    .result-item.error { background: #ffebee; border: 1.5px solid #ef9a9a; color: #b71c1c; }
     .result-item .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
     .result-item .content strong { display: block; margin-bottom: 3px; }
 
-    /* 카테고리 색상 */
-    .cat            { font-weight: 700; }
-    .cat-연차,
-    .cat-병가       { color: var(--red); }
-    .cat-출장       { color: var(--orange); }
-    .cat-교육,
-    .cat-워크숍     { color: var(--green); }
-    .cat-회의,
-    .cat-보고       { color: var(--blue); }
-    .cat-기타       { color: var(--gray); }
+    .error-detail { font-size: 12px; margin-top: 8px; padding: 10px 12px; background: rgba(211,47,47,0.06); border-radius: 8px; line-height: 1.8; color: #c62828; }
+    .error-detail a { color: #1565c0; text-decoration: underline; }
 
-    /* 최근 내역 */
+    .cat { font-weight: 700; }
+    .cat-연차, .cat-병가 { color: var(--red); }
+    .cat-출장 { color: var(--orange); }
+    .cat-교육, .cat-워크숍 { color: var(--green); }
+    .cat-회의, .cat-보고 { color: var(--blue); }
+    .cat-기타 { color: var(--gray); }
+
     .history-card { display: none; }
-
-    .history-card h3 {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-sub);
-      margin-bottom: 12px;
-    }
-
+    .history-card h3 { font-size: 13px; font-weight: 500; color: var(--text-sub); margin-bottom: 12px; }
     .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--gray-light); border-radius: 8px; font-size: 13px; }
+    .history-item .h-time { font-size: 11px; color: var(--text-sub); margin-left: auto; white-space: nowrap; }
 
-    .history-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      background: var(--gray-light);
-      border-radius: 8px;
-      font-size: 13px;
-    }
-
-    .history-item .h-time {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-left: auto;
-      white-space: nowrap;
-    }
-
-    /* 가이드 */
-    .guide {
-      background: var(--blue-light);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-    }
-
-    .guide h3 {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--blue-dark);
-      margin-bottom: 10px;
-    }
-
+    .guide { background: var(--blue-light); border-radius: var(--radius); padding: 20px 24px; }
+    .guide h3 { font-size: 13px; font-weight: 700; color: var(--blue-dark); margin-bottom: 10px; }
     .guide ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
-
-    .guide ul li {
-      font-size: 13px;
-      color: var(--blue-dark);
-      display: flex;
-      gap: 8px;
-    }
-
+    .guide ul li { font-size: 13px; color: var(--blue-dark); display: flex; gap: 8px; }
     .guide ul li::before { content: '→'; color: var(--blue-mid); flex-shrink: 0; }
 
-    /* 비활성화 오버레이 */
-    .form-wrap {
-      opacity: 0.5;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
+    .form-wrap { opacity: 0.5; pointer-events: none; transition: opacity 0.3s; }
+    .form-wrap.active { opacity: 1; pointer-events: auto; }
 
-    .form-wrap.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    @media (max-width: 480px) {
-      body { padding: 16px 12px 40px; }
-      .card { padding: 20px 18px; }
-    }
+    @media (max-width: 480px) { body { padding: 16px 12px 40px; } .card { padding: 20px 18px; } }
   </style>
 </head>
 
 <body>
 <div class="container">
 
-  <!-- 헤더 -->
   <div class="card header">
     <span class="header-icon">🐦</span>
     <h1>공일이 (公日 AI)</h1>
     <p>말하듯 입력하면 일정과 할일을<br>알아서 정리해드려요</p>
   </div>
 
-  <!-- API 키 미설정 경고 -->
-  <div class="warning-banner" id="warning-banner">
-    ⚠️ <strong>Gemini API 키 설정이 필요합니다</strong><br>
-    이 HTML 파일 상단 <code>GEMINI_API_KEY</code> 값을 본인 키로 변경해주세요.
+  <!-- ★ API 키 보안 안내 -->
+  <div class="security-banner">
+    <strong>🔐 API 키 보안 안내</strong>
+    이 파일에 API 키를 직접 넣으면 소스를 볼 수 있는 누구나 키를 가져갈 수 있어요.
+    <ol>
+      <li><strong>혼자만 쓸 경우</strong> → 현재 방식 사용 가능 (단, 외부 공유 금지)</li>
+      <li><strong>팀 공유 시</strong> → 백엔드 서버(Cloud Functions 등)에 키를 옮기세요</li>
+      <li>키가 노출됐다면 → <a href="https://aistudio.google.com/apikey" target="_blank">AI Studio</a>에서 즉시 삭제 후 재발급</li>
+    </ol>
+    현재 모델: <strong>gemini-2.5-flash-lite</strong> (무료 · 15 RPM · 1,000건/일)
   </div>
 
-  <!-- 로그인 카드 -->
+  <div class="warning-banner" id="warning-banner">
+    ⚠️ <strong>Gemini API 키 설정이 필요합니다</strong><br>
+    이 HTML 파일의 <code>GEMINI_API_KEY</code> 값을 본인 키로 변경해주세요.<br>
+    👉 <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#e65100;">키 발급받기 (aistudio.google.com)</a>
+  </div>
+
   <div class="card login-card">
-    <!-- 로그인 전 -->
     <div id="login-before">
       <p>캘린더에 일정을 등록하려면<br>구글 계정 로그인이 필요해요</p>
       <button id="google-login-btn" onclick="handleLogin()">
-        <svg viewBox="0 0 48 48">
-          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        </svg>
+        <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Google 계정으로 로그인
       </button>
     </div>
-
-    <!-- 로그인 후 (기본 숨김) -->
     <div id="login-after" style="display:none;">
       <div class="user-badge">
         <img id="user-photo" src="" alt="프로필"/>
@@ -463,50 +170,27 @@
     </div>
   </div>
 
-  <!-- 메인 입력 카드 -->
   <div class="card">
     <div class="form-wrap" id="form-wrap">
-
-      <!-- 일정 / 할일 선택 -->
       <span class="type-label">등록 유형을 선택해주세요</span>
       <div class="type-toggle">
-        <button class="type-btn active" id="type-event" onclick="setType('event')">
-          🗓️ 일정 (캘린더)
-        </button>
-        <button class="type-btn" id="type-task" onclick="setType('task')">
-          ✅ 할일 (Tasks)
-        </button>
+        <button class="type-btn active" id="type-event" onclick="setType('event')">🗓️ 일정 (캘린더)</button>
+        <button class="type-btn" id="type-task" onclick="setType('task')">✅ 할일 (Tasks)</button>
       </div>
-
-      <!-- 자연어 입력 -->
       <label class="input-label" id="input-label">💬 어떤 일정인가요?</label>
       <textarea id="nl-input" placeholder="내일 3시 월간업무보고 참석"></textarea>
       <p class="input-hint">Enter로 등록 &nbsp;·&nbsp; Shift+Enter로 줄바꿈</p>
-
-      <!-- 등록 버튼 -->
-      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">
-        등록하기
-      </button>
-
-      <!-- 로딩 -->
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <span id="loading-text">공일이가 분석하고 있어요...</span>
-      </div>
-
-      <!-- 결과 -->
+      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">등록하기</button>
+      <div class="loading" id="loading"><div class="spinner"></div><span id="loading-text">공일이가 분석하고 있어요...</span></div>
       <div class="result-area" id="result-area"></div>
-
     </div>
   </div>
 
-  <!-- 최근 등록 내역 -->
   <div class="card history-card" id="history-card">
     <h3>🕐 최근 등록 내역</h3>
     <div class="history-list" id="history-list"></div>
   </div>
 
-  <!-- 사용법 가이드 -->
   <div class="guide">
     <h3>💡 이렇게 말해보세요</h3>
     <ul>
@@ -519,61 +203,41 @@
     </ul>
   </div>
 
-</div><!-- /container -->
-
+</div>
 
 <script>
 /* ============================================================
-   ▶ 설정 영역 (반드시 본인 값으로 변경!)
+   ▶ 설정 영역
+   ⚠️  보안 주의: 파일을 외부 공유하면 API 키가 노출됩니다.
+       팀 공유 시 백엔드 서버로 키를 이전하세요.
+       키 노출 시: https://aistudio.google.com/apikey 에서 삭제 후 재발급
 ============================================================ */
 const CONFIG = {
-  // Gemini API 키: https://aistudio.google.com/apikey 에서 발급
-  GEMINI_API_KEY: 'AIzaSyAWlwomtKhhqQri7120_x7kEE1v3my0y8w',
+  GEMINI_API_KEY: 'YOUR_GEMINI_API_KEY',
 
-  // Google OAuth Client ID (이미 발급 완료!)
+  // ★ gemini-2.0-flash → gemini-2.5-flash-lite 로 변경
+  //   무료 최적: 15 RPM / 1,000건/일
+  //   더 높은 품질: 'gemini-2.5-flash' (10 RPM / 250건/일)
+  GEMINI_MODEL: 'gemini-2.5-flash-lite',
+
   GOOGLE_CLIENT_ID: '483134932579-t01pbijt2bmpunoe5j8ei44hqc17mfdi.apps.googleusercontent.com',
-
-  // 캘린더 ID
-  // 개인 캘린더: 'primary'
-  // 부서 공용 캘린더: 'xxx@group.calendar.google.com'
   CALENDAR_ID: 'primary',
 };
-/* ============================================================
-   ▶ 설정 끝
-============================================================ */
 
+let accessToken = null;
+let currentUser = null;
+let currentType = 'event';
+let sessionHistory = [];
 
-/* ============================================================
-   전역 상태
-============================================================ */
-let accessToken    = null;   // OAuth 액세스 토큰 (메모리에만 저장)
-let currentUser    = null;   // 로그인 사용자 정보
-let currentType    = 'event'; // 'event' 또는 'task'
-let sessionHistory = [];     // 세션 내 등록 내역 (최대 5개)
-
-
-/* ============================================================
-   페이지 로드 초기화
-============================================================ */
 window.addEventListener('load', () => {
-  // Gemini API 키 미설정 체크
   if (CONFIG.GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
     document.getElementById('warning-banner').style.display = 'block';
   }
-
-  // Enter 키로 등록
   document.getElementById('nl-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); }
   });
 });
 
-
-/* ============================================================
-   구글 로그인 (Google Identity Services)
-============================================================ */
 function handleLogin() {
   const tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: CONFIG.GOOGLE_CLIENT_ID,
@@ -584,10 +248,7 @@ function handleLogin() {
       'https://www.googleapis.com/auth/userinfo.email',
     ].join(' '),
     callback: async (response) => {
-      if (response.error) {
-        alert('로그인 오류: ' + response.error);
-        return;
-      }
+      if (response.error) { alert('로그인 오류: ' + response.error); return; }
       accessToken = response.access_token;
       await fetchUserInfo();
       updateLoginUI(true);
@@ -596,125 +257,66 @@ function handleLogin() {
   tokenClient.requestAccessToken({ prompt: 'consent' });
 }
 
-
-/* ============================================================
-   로그인한 사용자 정보 가져오기
-============================================================ */
 async function fetchUserInfo() {
   try {
-    const res  = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { Authorization: 'Bearer ' + accessToken },
-    });
+    const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', { headers: { Authorization: 'Bearer ' + accessToken } });
     const data = await res.json();
-    currentUser = {
-      name:  data.name    || '사용자',
-      email: data.email   || '',
-      photo: data.picture || '',
-    };
-  } catch (e) {
-    currentUser = { name: '사용자', email: '', photo: '' };
-  }
+    currentUser = { name: data.name || '사용자', email: data.email || '', photo: data.picture || '' };
+  } catch (e) { currentUser = { name: '사용자', email: '', photo: '' }; }
 }
 
-
-/* ============================================================
-   로그아웃
-============================================================ */
 function handleLogout() {
-  if (accessToken) {
-    google.accounts.oauth2.revoke(accessToken, () => {});
-  }
-  accessToken = null;
-  currentUser = null;
+  if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
+  accessToken = null; currentUser = null;
   updateLoginUI(false);
 }
 
-
-/* ============================================================
-   로그인 상태에 따른 UI 전환
-============================================================ */
 function updateLoginUI(isLoggedIn) {
-  document.getElementById('login-before').style.display = isLoggedIn ? 'none'  : 'block';
-  document.getElementById('login-after').style.display  = isLoggedIn ? 'block' : 'none';
+  document.getElementById('login-before').style.display = isLoggedIn ? 'none' : 'block';
+  document.getElementById('login-after').style.display = isLoggedIn ? 'block' : 'none';
   document.getElementById('form-wrap').classList.toggle('active', isLoggedIn);
-
   if (isLoggedIn && currentUser) {
-    document.getElementById('user-photo').src              = currentUser.photo;
+    document.getElementById('user-photo').src = currentUser.photo;
     document.getElementById('user-name-display').textContent = currentUser.name + '님';
   }
 }
 
-
-/* ============================================================
-   유형 전환 (일정 ↔ 할일)
-============================================================ */
 function setType(type) {
   currentType = type;
   document.getElementById('type-event').classList.toggle('active', type === 'event');
-  document.getElementById('type-task').classList.toggle('active',  type === 'task');
-
-  const ta    = document.getElementById('nl-input');
+  document.getElementById('type-task').classList.toggle('active', type === 'task');
+  const ta = document.getElementById('nl-input');
   const label = document.getElementById('input-label');
-
-  if (type === 'event') {
-    ta.placeholder    = '내일 3시 월간업무보고 참석';
-    label.textContent = '💬 어떤 일정인가요?';
-  } else {
-    ta.placeholder    = '금요일 오후 3시까지 공문 회신하기';
-    label.textContent = '💬 어떤 할일인가요?';
-  }
+  if (type === 'event') { ta.placeholder = '내일 3시 월간업무보고 참석'; label.textContent = '💬 어떤 일정인가요?'; }
+  else { ta.placeholder = '금요일 오후 3시까지 공문 회신하기'; label.textContent = '💬 어떤 할일인가요?'; }
 }
 
-
-/* ============================================================
-   메인 등록 처리
-============================================================ */
 async function handleSubmit() {
   if (!accessToken) { alert('먼저 구글 로그인을 해주세요 😊'); return; }
-
   const input = document.getElementById('nl-input').value.trim();
-  if (!input)  { alert('내용을 입력해주세요!'); return; }
-
-  setLoading(true);
-  hideResult();
-
+  if (!input) { alert('내용을 입력해주세요!'); return; }
+  setLoading(true); hideResult();
   try {
-    // 1단계: Gemini로 자연어 분석
     const parsed = await analyzeWithGemini(input);
-    if (!parsed || parsed.length === 0) {
-      throw new Error('입력을 이해하지 못했어요. 날짜와 내용을 좀 더 구체적으로 입력해주세요.');
-    }
-
-    // 2단계: 캘린더 또는 Tasks에 등록
+    if (!parsed || parsed.length === 0) throw new Error('입력을 이해하지 못했어요. 날짜와 내용을 좀 더 구체적으로 입력해주세요.');
     const results = [];
     for (const item of parsed) {
-      if (currentType === 'event') {
-        results.push(await registerCalendarEvent(item));
-      } else {
-        results.push(await registerTask(item));
-      }
+      results.push(currentType === 'event' ? await registerCalendarEvent(item) : await registerTask(item));
     }
-
     showResults(results);
     document.getElementById('nl-input').value = '';
-
   } catch (err) {
     console.error('등록 오류:', err);
-    showError(err.message || '등록 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
-  } finally {
-    setLoading(false);
-  }
+    showError(err.message || '등록 중 오류가 발생했어요.');
+  } finally { setLoading(false); }
 }
 
-
 /* ============================================================
-   Gemini API로 자연어 분석
+   ★ Gemini API 분석 — 오류 메시지 세분화
 ============================================================ */
 async function analyzeWithGemini(input) {
-  const today    = new Date();
-  const todayStr = today.toLocaleDateString('ko-KR', {
-    year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
-  });
+  const today = new Date();
+  const todayStr = today.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
   const todayISO = today.toISOString().split('T')[0];
   const typeLabel = currentType === 'event' ? '일정' : '할일';
 
@@ -723,45 +325,51 @@ async function analyzeWithGemini(input) {
     `오늘 날짜: ${todayStr} (${todayISO})\n\n` +
     `사용자 입력을 분석하여 순수 JSON 배열만 출력하세요.\n` +
     `마크다운 코드블록이나 설명 없이 JSON만 출력하세요.\n\n` +
-    (currentType === 'event' ?
-      `일정 분석 규칙:\n` +
-      `- 상대 표현("내일", "다음주 화요일")을 ${todayISO} 기준 절대 날짜로 변환\n` +
-      `- 시간이 없으면 startTime을 "ALL_DAY"로 설정\n` +
-      `- 종료 시간이 없으면 startTime + 1시간\n` +
-      `- 여러 일정은 각각 배열 원소로 분리\n` +
-      `- category는 반드시 다음 중 하나: 연차, 병가, 출장, 교육, 워크숍, 회의, 보고, 기타\n\n` +
-      `형식: [{"title":"제목","category":"카테고리","date":"YYYY-MM-DD","startTime":"HH:MM 또는 ALL_DAY","endTime":"HH:MM"}]\n`
-      :
-      `할일 분석 규칙:\n` +
-      `- 마감 표현을 ${todayISO} 기준 절대 날짜/시각으로 변환\n` +
-      `- 마감 시각이 없으면 time을 "23:59"으로 설정\n\n` +
-      `형식: [{"title":"제목","date":"YYYY-MM-DD","time":"HH:MM"}]\n`
+    (currentType === 'event'
+      ? `일정 분석 규칙:\n- 상대 표현("내일", "다음주 화요일")을 ${todayISO} 기준 절대 날짜로 변환\n- 시간이 없으면 startTime을 "ALL_DAY"로 설정\n- 종료 시간이 없으면 startTime + 1시간\n- 여러 일정은 각각 배열 원소로 분리\n- category는 반드시 다음 중 하나: 연차, 병가, 출장, 교육, 워크숍, 회의, 보고, 기타\n\n형식: [{"title":"제목","category":"카테고리","date":"YYYY-MM-DD","startTime":"HH:MM 또는 ALL_DAY","endTime":"HH:MM"}]\n`
+      : `할일 분석 규칙:\n- 마감 표현을 ${todayISO} 기준 절대 날짜/시각으로 변환\n- 마감 시각이 없으면 time을 "23:59"으로 설정\n\n형식: [{"title":"제목","date":"YYYY-MM-DD","time":"HH:MM"}]\n`
     ) +
     `\n사용자 입력: "${input}"\n\nJSON 배열:`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent?key=${CONFIG.GEMINI_API_KEY}`;
 
   const res = await fetch(url, {
-    method:  'POST',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.1 },
-    }),
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1 } }),
   });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const msg = err?.error?.message || '';
-    if (res.status === 400) throw new Error('Gemini API 키가 올바르지 않아요. 설정을 확인해주세요.');
-    if (res.status === 429) throw new Error('요청이 너무 많아요. 잠시 후 다시 시도해주세요.');
-    throw new Error('AI 분석 오류 (' + res.status + '): ' + msg);
+    const status = res.status;
+
+    /* ★ HTTP 상태코드별 세분화 */
+    if (status === 400) {
+      if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid') || msg.includes('API key expired')) {
+        throw new Error('API_KEY_EXPIRED::API 키가 만료되었거나 유효하지 않아요.');
+      }
+      throw new Error('API_KEY_ERROR::API 키 설정에 문제가 있어요.');
+    }
+
+    if (status === 403) {
+      throw new Error('API_FORBIDDEN::API 키의 사용 권한이 없어요.');
+    }
+
+    if (status === 404) {
+      throw new Error('MODEL_NOT_FOUND::모델 "' + CONFIG.GEMINI_MODEL + '"을 찾을 수 없어요.');
+    }
+
+    if (status === 429) {
+      throw new Error('RATE_LIMIT::무료 사용 한도를 초과했어요. (모델: ' + CONFIG.GEMINI_MODEL + ')');
+    }
+
+    throw new Error('AI 분석 오류 (' + status + '): ' + msg);
   }
 
   const data = await res.json();
   let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
   console.log('🤖 Gemini 응답:', text);
-
   text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
   try {
@@ -772,200 +380,143 @@ async function analyzeWithGemini(input) {
   }
 }
 
-
 /* ============================================================
-   Google Calendar API로 일정 등록
+   Google Calendar API
 ============================================================ */
 async function registerCalendarEvent(item) {
-  // 카테고리별 색상 ID
-  const colorMap = {
-    '연차': '11', '병가': '11',
-    '출장': '6',
-    '교육': '10', '워크숍': '10',
-    '회의': '9',  '보고': '9',
-  };
-
-  const category       = item.category || '기타';
-  const colorId        = colorMap[category];
-  const timePrefix     = (item.startTime && item.startTime !== 'ALL_DAY') ? item.startTime + ' ' : '';
+  const colorMap = { '연차': '11', '병가': '11', '출장': '6', '교육': '10', '워크숍': '10', '회의': '9', '보고': '9' };
+  const category = item.category || '기타';
+  const colorId = colorMap[category];
+  const timePrefix = (item.startTime && item.startTime !== 'ALL_DAY') ? item.startTime + ' ' : '';
   const formattedTitle = `[${category}] ${timePrefix}${item.title}`;
-
-  const event = {
-    summary:     formattedTitle,
-    description: `작성자: ${currentUser.name}\n자동 등록 by 공일이`,
-  };
-
+  const event = { summary: formattedTitle, description: `작성자: ${currentUser.name}\n자동 등록 by 공일이` };
   if (colorId) event.colorId = colorId;
-
   if (!item.startTime || item.startTime === 'ALL_DAY') {
-    event.start = { date: item.date };
-    event.end   = { date: item.date };
+    event.start = { date: item.date }; event.end = { date: item.date };
   } else {
     event.start = { dateTime: `${item.date}T${item.startTime}:00`, timeZone: 'Asia/Seoul' };
-    event.end   = { dateTime: `${item.date}T${item.endTime}:00`,   timeZone: 'Asia/Seoul' };
+    event.end = { dateTime: `${item.date}T${item.endTime}:00`, timeZone: 'Asia/Seoul' };
   }
-
   const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CONFIG.CALENDAR_ID)}/events`;
-  const res = await fetch(url, {
-    method:  'POST',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken,
-      'Content-Type':  'application/json',
-    },
-    body: JSON.stringify(event),
-  });
-
+  const res = await fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' }, body: JSON.stringify(event) });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    if (res.status === 401) throw new Error('인증이 만료됐어요. 다시 로그인해주세요.');
-    if (res.status === 403) throw new Error('캘린더 접근 권한이 없어요. 다시 로그인하고 권한을 허용해주세요.');
+    if (res.status === 401) throw new Error('GOOGLE_AUTH::Google 인증이 만료됐어요. 로그아웃 후 다시 로그인해주세요.');
+    if (res.status === 403) throw new Error('GOOGLE_AUTH::캘린더 접근 권한이 없어요. 로그아웃 후 다시 로그인하고 권한을 허용해주세요.');
     throw new Error('캘린더 등록 실패: ' + (err?.error?.message || res.status));
   }
-
   const data = await res.json();
-
-  return {
-    type:     'event',
-    success:  true,
-    title:    formattedTitle,
-    category: category,
-    date:     item.date,
-    time:     (!item.startTime || item.startTime === 'ALL_DAY') ? '종일' : `${item.startTime} ~ ${item.endTime}`,
-    link:     data.htmlLink || '',
-  };
+  return { type: 'event', success: true, title: formattedTitle, category, date: item.date, time: (!item.startTime || item.startTime === 'ALL_DAY') ? '종일' : `${item.startTime} ~ ${item.endTime}`, link: data.htmlLink || '' };
 }
 
-
 /* ============================================================
-   Google Tasks API로 할일 등록
+   Google Tasks API
 ============================================================ */
 async function registerTask(item) {
-  const task = {
-    title: item.title,
-    notes: `작성자: ${currentUser.name}\n자동 등록 by 공일이`,
-    due:   `${item.date}T${item.time || '23:59'}:00.000Z`,
-  };
-
-  const res = await fetch('https://tasks.googleapis.com/tasks/v1/lists/@default/tasks', {
-    method:  'POST',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken,
-      'Content-Type':  'application/json',
-    },
-    body: JSON.stringify(task),
-  });
-
+  const task = { title: item.title, notes: `작성자: ${currentUser.name}\n자동 등록 by 공일이`, due: `${item.date}T${item.time || '23:59'}:00.000Z` };
+  const res = await fetch('https://tasks.googleapis.com/tasks/v1/lists/@default/tasks', { method: 'POST', headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' }, body: JSON.stringify(task) });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    if (res.status === 401) throw new Error('인증이 만료됐어요. 다시 로그인해주세요.');
+    if (res.status === 401) throw new Error('GOOGLE_AUTH::Google 인증이 만료됐어요. 로그아웃 후 다시 로그인해주세요.');
     throw new Error('할일 등록 실패: ' + (err?.error?.message || res.status));
   }
-
-  return {
-    type:    'task',
-    success: true,
-    title:   item.title,
-    date:    item.date,
-    time:    item.time || '23:59',
-  };
+  return { type: 'task', success: true, title: item.title, date: item.date, time: item.time || '23:59' };
 }
 
+function getCategoryBadge(cat) { return `<span class="cat cat-${cat}">[${cat}]</span>`; }
 
-/* ============================================================
-   카테고리 배지 HTML 생성
-============================================================ */
-function getCategoryBadge(category) {
-  return `<span class="cat cat-${category}">[${category}]</span>`;
-}
-
-
-/* ============================================================
-   결과 표시
-============================================================ */
 function showResults(results) {
   const area = document.getElementById('result-area');
-  area.innerHTML     = '';
-  area.style.display = 'flex';
-
+  area.innerHTML = ''; area.style.display = 'flex';
   results.forEach(r => {
-    const div       = document.createElement('div');
-    div.className   = 'result-item success';
-
+    const div = document.createElement('div');
+    div.className = 'result-item success';
     if (r.type === 'event') {
       const timeDisplay = r.time !== '종일' ? `<span style="color:var(--text-sub);font-size:13px;">${r.time.split(' ~ ')[0]}</span> ` : '';
-      const core        = r.title.replace(`[${r.category}] `, '').replace((r.time.split(' ~ ')[0] || '') + ' ', '');
-      div.innerHTML = `
-        <span class="icon">✅</span>
-        <div class="content">
-          <strong>캘린더에 등록됐어요!</strong>
-          ${getCategoryBadge(r.category)} ${timeDisplay}${escHtml(core)}
-          <br><span style="font-size:12px;color:#388e3c;">📅 ${r.date} · ${r.time}</span>
-          ${r.link ? `<br><a href="${r.link}" target="_blank" style="font-size:12px;color:var(--blue);">캘린더에서 확인 →</a>` : ''}
-        </div>`;
+      const core = r.title.replace(`[${r.category}] `, '').replace((r.time.split(' ~ ')[0] || '') + ' ', '');
+      div.innerHTML = `<span class="icon">✅</span><div class="content"><strong>캘린더에 등록됐어요!</strong>${getCategoryBadge(r.category)} ${timeDisplay}${escHtml(core)}<br><span style="font-size:12px;color:#388e3c;">📅 ${r.date} · ${r.time}</span>${r.link ? `<br><a href="${r.link}" target="_blank" style="font-size:12px;color:var(--blue);">캘린더에서 확인 →</a>` : ''}</div>`;
     } else {
-      div.innerHTML = `
-        <span class="icon">✅</span>
-        <div class="content">
-          <strong>할일에 추가됐어요!</strong>
-          ${escHtml(r.title)}
-          <br><span style="font-size:12px;color:#388e3c;">📌 마감: ${r.date} ${r.time}</span>
-        </div>`;
+      div.innerHTML = `<span class="icon">✅</span><div class="content"><strong>할일에 추가됐어요!</strong>${escHtml(r.title)}<br><span style="font-size:12px;color:#388e3c;">📌 마감: ${r.date} ${r.time}</span></div>`;
     }
-
-    area.appendChild(div);
-    addToHistory(r);
+    area.appendChild(div); addToHistory(r);
   });
 }
 
-
 /* ============================================================
-   에러 표시
+   ★ 오류 표시 — 에러 코드별 상세 해결 방법 제공
 ============================================================ */
 function showError(msg) {
-  const area         = document.getElementById('result-area');
+  const area = document.getElementById('result-area');
   area.style.display = 'flex';
-  area.innerHTML     = `
+
+  let errorCode = '', displayMsg = msg;
+  if (msg.includes('::')) { const p = msg.split('::'); errorCode = p[0]; displayMsg = p[1]; }
+
+  const guides = {
+    'API_KEY_EXPIRED': `
+      <div class="error-detail">
+        <strong>🔑 API 키 재발급 방법:</strong><br>
+        1. <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> 접속<br>
+        2. 기존 키 🗑️ 삭제<br>
+        3. "API 키 만들기" 클릭 → 새 키 복사<br>
+        4. 이 파일의 <code>GEMINI_API_KEY</code> 값을 새 키로 교체 후 저장
+      </div>`,
+    'API_KEY_ERROR': `
+      <div class="error-detail">
+        <strong>🔧 확인해주세요:</strong><br>
+        · <a href="https://aistudio.google.com/apikey" target="_blank">AI Studio</a>에서 키가 활성 상태인지 확인<br>
+        · 키 복사 시 앞뒤 공백이 없는지 확인<br>
+        · 문제 지속 시 키를 삭제하고 새로 발급
+      </div>`,
+    'API_FORBIDDEN': `
+      <div class="error-detail">
+        <strong>🔧 확인해주세요:</strong><br>
+        · <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank">Cloud Console</a>에서 Generative Language API 활성화 확인<br>
+        · 또는 <a href="https://aistudio.google.com/apikey" target="_blank">AI Studio</a>에서 새 키를 발급
+      </div>`,
+    'MODEL_NOT_FOUND': `
+      <div class="error-detail">
+        <strong>🔄 모델 변경이 필요해요:</strong><br>
+        · <code>gemini-2.0-flash</code>는 2026년 6월 서비스 종료 예정<br>
+        · 이 파일의 <code>GEMINI_MODEL</code>을 <code>gemini-2.5-flash-lite</code> 로 변경하세요
+      </div>`,
+    'RATE_LIMIT': `
+      <div class="error-detail">
+        <strong>⏱️ 무료 한도 안내 (${escHtml(CONFIG.GEMINI_MODEL)}):</strong><br>
+        · 분당 15회(RPM) / 하루 1,000회(RPD) 제한<br>
+        · RPM 초과 → <strong>1~2분 대기</strong> 후 재시도<br>
+        · RPD 초과 → 한국시간 <strong>오후 4시</strong>(태평양 자정)에 초기화<br>
+        · 한도 부족 시 모델을 <code>gemini-2.5-flash</code>(250건/일)로 변경 검토
+      </div>`,
+    'GOOGLE_AUTH': `
+      <div class="error-detail">
+        <strong>🔄 해결 방법:</strong><br>
+        위 "로그아웃" 클릭 → 다시 "Google 계정으로 로그인" → 권한 허용
+      </div>`,
+  };
+
+  area.innerHTML = `
     <div class="result-item error">
       <span class="icon">❌</span>
       <div class="content">
         <strong>등록에 실패했어요</strong>
-        ${escHtml(msg)}
+        ${escHtml(displayMsg).replace(/\n/g, '<br>')}
+        ${guides[errorCode] || ''}
       </div>
     </div>`;
 }
 
+function hideResult() { const a = document.getElementById('result-area'); a.style.display = 'none'; a.innerHTML = ''; }
 
-/* ============================================================
-   결과 초기화
-============================================================ */
-function hideResult() {
-  const area         = document.getElementById('result-area');
-  area.style.display = 'none';
-  area.innerHTML     = '';
-}
-
-
-/* ============================================================
-   로딩 토글
-============================================================ */
 function setLoading(on) {
-  document.getElementById('submit-btn').disabled        = on;
-  document.getElementById('loading').style.display      = on ? 'flex' : 'none';
-  if (on) {
-    document.getElementById('loading-text').textContent =
-      currentType === 'event'
-        ? '공일이가 일정을 분석하고 있어요...'
-        : '공일이가 할일을 정리하고 있어요...';
-  }
+  document.getElementById('submit-btn').disabled = on;
+  document.getElementById('loading').style.display = on ? 'flex' : 'none';
+  if (on) document.getElementById('loading-text').textContent = currentType === 'event' ? '공일이가 일정을 분석하고 있어요...' : '공일이가 할일을 정리하고 있어요...';
 }
 
-
-/* ============================================================
-   세션 내역 추가 및 렌더링
-============================================================ */
 function addToHistory(r) {
   const time = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-  sessionHistory.unshift({ icon: r.type === 'event' ? '🗓️' : '✅', text: r.title || r.title, time });
+  sessionHistory.unshift({ icon: r.type === 'event' ? '🗓️' : '✅', text: r.title, time });
   if (sessionHistory.length > 5) sessionHistory.pop();
   renderHistory();
 }
@@ -975,26 +526,10 @@ function renderHistory() {
   const list = document.getElementById('history-list');
   if (sessionHistory.length === 0) { card.style.display = 'none'; return; }
   card.style.display = 'block';
-  list.innerHTML = sessionHistory.map(h =>
-    `<div class="history-item">
-      <span>${h.icon}</span>
-      <span>${escHtml(h.text)}</span>
-      <span class="h-time">${h.time}</span>
-    </div>`
-  ).join('');
+  list.innerHTML = sessionHistory.map(h => `<div class="history-item"><span>${h.icon}</span><span>${escHtml(h.text)}</span><span class="h-time">${h.time}</span></div>`).join('');
 }
 
-
-/* ============================================================
-   XSS 방지 HTML 이스케이프
-============================================================ */
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
 </html>
