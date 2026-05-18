@@ -320,14 +320,37 @@ async function analyzeWithGemini(input) {
   const todayISO = today.toISOString().split('T')[0];
   const typeLabel = currentType === 'event' ? '일정' : '할일';
 
-  const prompt =
+  const userName = "홍길동"; // 유저의 성함을 여기에 입력하거나 변수로 받으세요.
+
+const prompt =
     `당신은 한국 공무원의 업무 ${typeLabel} 분석 전문가입니다.\n` +
     `오늘 날짜: ${todayStr} (${todayISO})\n\n` +
     `사용자 입력을 분석하여 순수 JSON 배열만 출력하세요.\n` +
     `마크다운 코드블록이나 설명 없이 JSON만 출력하세요.\n\n` +
     (currentType === 'event'
-      ? `일정 분석 규칙:\n- 상대 표현("내일", "다음주 화요일")을 ${todayISO} 기준 절대 날짜로 변환\n- 시간이 없으면 startTime을 "ALL_DAY"로 설정\n- 종료 시간이 없으면 startTime + 1시간\n- 여러 일정은 각각 배열 원소로 분리\n- category는 반드시 다음 중 하나: 연차, 병가, 출장, 교육, 워크숍, 회의, 보고, 기타\n\n형식: [{"title":"제목","category":"카테고리","date":"YYYY-MM-DD","startTime":"HH:MM 또는 ALL_DAY","endTime":"HH:MM"}]\n`
-      : `할일 분석 규칙:\n- 마감 표현을 ${todayISO} 기준 절대 날짜/시각으로 변환\n- 마감 시각이 없으면 time을 "23:59"으로 설정\n\n형식: [{"title":"제목","date":"YYYY-MM-DD","time":"HH:MM"}]\n`
+      ? `일정 분석 규칙:
+- 상대 표현("내일", "다음주")을 ${todayISO} 기준 절대 날짜로 변환
+- 시간이 없으면 startTime을 "ALL_DAY"로 설정
+- 종료 시간이 없으면 startTime + 1시간
+- 여러 일정은 각각 배열 원소로 분리
+
+카테고리 및 색상 규칙:
+1. 휴가: 휴가, 조퇴, 지각, 반차, 연차, 외출 포함 시 (colorId: "11", 색상: 토마토)
+2. 회의: 회의 관련 업무 (colorId: "10", 색상: 바질)
+3. 교육: 교육, 워크숍 포함 시 (colorId: "9", 색상: 블루베리)
+4. 출장: 출장 관련 업무 (colorId: "5", 색상: 바나나)
+5. 기타: 위 항목에 해당하지 않는 경우 (colorId: "default")
+
+출력 제목 형식:
+- 반드시 "[${userName}][카테고리] 입력받은제목" 형식으로 생성할 것
+
+형식: [{"title":"[${userName}][카테고리] 제목","category":"카테고리명","colorId":"숫자","date":"YYYY-MM-DD","startTime":"HH:MM 또는 ALL_DAY","endTime":"HH:MM"}]\n`
+      : `할일 분석 규칙:
+- 마감 표현을 ${todayISO} 기준 절대 날짜/시각으로 변환
+- 마감 시각이 없으면 time을 "23:59"으로 설정
+- 제목 형식: "[${userName}] 제목"
+
+형식: [{"title":"[${userName}] 제목","date":"YYYY-MM-DD","time":"HH:MM"}]\n`
     ) +
     `\n사용자 입력: "${input}"\n\nJSON 배열:`;
 
